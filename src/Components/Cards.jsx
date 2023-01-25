@@ -27,6 +27,7 @@ class Cards extends Component {
         this.setState({
             open:true
         })
+        console.log(this.state.open);
     }
     handeladdOpen = ()=>{
       this.setState({
@@ -37,14 +38,14 @@ class Cards extends Component {
         this.setState({
             addacard:false,
             add:false,
-            open:false,
+
         })
     }
     componentDidMount(){
         this.props.gettingCardsData(this.props.listid)
     }
   render() {
-    console.log(this.props.cardsData);
+    // console.log(this.props.cardsData);
     return (
       <Stack>
         {
@@ -65,8 +66,9 @@ class Cards extends Component {
                               })
                               }
                               
-                              }>
-                                <Stack display={'flex'} flexDirection={'row'} justifyContent={'space-between'} sx={{ fontSize: 14,backgroundColor:'white',padding:'5px',borderRadius:'5px',boxShadow:'1px  2px gray' }}  key={data.id}>
+                              }> 
+                                <Stack display={'flex'} flexDirection={'row'} justifyContent={'space-between'} sx={{ fontSize: 14,backgroundColor:'white',padding:'5px',borderRadius:'5px',boxShadow:'1px  2px gray' }}  key={data.id} 
+                                >
                                   <Typography onClick={this.handelOpen}>
                                       {data.name}    
                                   </Typography>
@@ -74,37 +76,19 @@ class Cards extends Component {
                                 </Stack>
                             </CardContent>
                             {
-                              index == this.props.state.cardsData.length-1?
+                              index == this.props.state.cardsData.length<1?
                               <Stack>
             
-                            <Dialog open={this.state.open} onClose={this.handelClose}>
-                            <Stack display={'flex'} flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'} width={'350px'}>
-                              <Typography  sx={{textAlign:'center',marginRight:'100px',padding:'10px'}} pt={1}>{this.state.value}</Typography>
-                              <CloseRoundedIcon  size='small' sx={{margin:'10px'}}  onClick={this.handelClose}></CloseRoundedIcon>
-                            </Stack>
-                            <hr></hr>
-                            <DialogContent>
-                            
-                            {/* <TextField
-                                autoFocus   
-                                id="outlined-basic"
-                                label="Board Title"
-                                type="text"
-                                size="small"
-                                fullWidth
-                                variant="outlined"
-                                placeholder='Enter Board Title.....'
-                                onChange={(event)=>{
-                                    this.setState({
-                                        name:event.target.value
-                                    })
-                                }}
-                                value={this.state.name}
-                            /> */}
-                                <Checklists></Checklists>
-                                </DialogContent>
-                            </Dialog>
-                          </Stack>:null
+                                <Dialog open={this.state.open} onClose={this.handelClose}>
+                                <Stack display={'flex'} flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'} width={'350px'}>
+                                  <Typography  sx={{textAlign:'center',marginRight:'100px',padding:'10px'}} pt={1}>{this.state.value}</Typography>
+                                  <CloseRoundedIcon  size='small' sx={{margin:'10px'}}  onClick={this.handelClose}></CloseRoundedIcon>
+                                </Stack>
+                                <hr></hr>
+                                    <Checklists cardId={this.state.cardId}></Checklists>
+                                </Dialog>
+                              </Stack>
+                          :<></>
                             }
                             
                             </>

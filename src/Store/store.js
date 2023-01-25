@@ -7,10 +7,12 @@ const token = 'ATTA914c18ff4bc110c847eb2b7c989dc10c7b4e8e05d28f8845fbfe1c48bce46
 const initailasatate = {
     boardsData : [],
     listsData : [],
-    cardsData : []
+    cardsData : [],
+    checkListData:[],
+    checkItemsData:[]
 }
 
- function readingBoardsData(data){
+function readingBoardsData(data){
     return{
         type : 'READING_BOARDS_DATA',
         payload : data
@@ -34,14 +36,12 @@ function creatingListsData(data){
         payload : data
     }
 }
-
 function deleteListsData(data){
     return{
         type : 'DELETE_LISTS_DATA',
         payload : data
     }
 }
-
 function readingCardssData(data){
     return{
         type : 'READING_CARDS_DATA',
@@ -60,6 +60,42 @@ function deletingCardsData(data){
         payload : data
     }
 }
+function readingCheckListData(data){
+    return{
+        type : 'READING_CHECKLIST_DATA',
+        payload : data
+    }
+}
+function creatingCheckListData(data){
+    return{
+        type : 'CREATING_CHECKLIST_DATA',
+        payload : data
+    }
+} 
+function deletingChechListData(data){
+    return{
+        type : 'DELETING_CHECKLIST_DATA',
+        payload : data
+    }
+}
+function readingCheckItemData(data){
+    return{
+        type : 'READING_CHECKITEMS_DATA',
+        payload : data
+    }
+}
+function creatingCheckItemData(data){
+    return{
+        type : 'CREATING_CHECKITEMS_DATA',
+        payload : data
+    }
+}
+function deleteCheckItemData(data){
+    return{
+        type : 'DELETE_CHECKITEMS_DATA',
+        payload : data
+    }
+}
 
 export function gettingBoardsData(){
     return function(dispatch){
@@ -72,7 +108,6 @@ export function gettingBoardsData(){
         
     }
 }
-
 export function creatBoardsData(name){
     return function(dispatch){
         axios.post(`https://api.trello.com/1/boards/?name=${name}&key=44fd76c8a8185b925892a08c3b91d28e&token=ATTA914c18ff4bc110c847eb2b7c989dc10c7b4e8e05d28f8845fbfe1c48bce469fc6C1771EC`)
@@ -82,7 +117,6 @@ export function creatBoardsData(name){
         })
     }
 }
-
 export function gettingListsData(id){
     return function(dispatch){
         axios.get(`https://api.trello.com/1/boards/${id}/lists?key=${key}&token=${token}`)
@@ -91,7 +125,6 @@ export function gettingListsData(id){
         })
     }
 }
-
 export function createListData(name,id){
     return function(dispatch){
         axios.post(`https://api.trello.com/1/lists?name=${name}&idBoard=${id}&key=${key}&token=${token}`)
@@ -101,7 +134,6 @@ export function createListData(name,id){
         })
     }
 }
-
 export function deleteListData(id){
     return function(dispatch){
         axios.put(`https://api.trello.com/1/lists/${id}/closed?value=true&key=${key}&token=${token}`)
@@ -110,13 +142,12 @@ export function deleteListData(id){
         })
     }
 }
-
 export function gettingCardsData(id){
     return function(dispatch){
         axios.get(`https://api.trello.com/1/lists/${id}/cards?key=${key}&token=${token}`)
         .then((res)=>{
         dispatch(readingCardssData(res.data))
-        console.log('hello');
+        // console.log('hello');
         })
     }
 }
@@ -138,6 +169,61 @@ export function deleteCardsData(id){
         })
     }
 }
+export function gettingCheckListData(id){
+    return function(dispatch){
+        dispatch(readingCheckListData(null))
+        axios.get(`https://api.trello.com/1/cards/${id}/checklists?key=${key}&token=${token}`)
+        .then((res)=>{
+            dispatch(readingCheckListData(res.data))
+        })
+        
+    }
+}
+export function createChechListData(name,id){
+    return function(dispatch){
+        axios.post(`https://api.trello.com/1/checklists?name=${name}&idCard=${id}&key=${key}&token=${token}`)
+        .then(res =>{ 
+            dispatch(creatingCheckListData(res.data))
+            // console.log( res.data,'post');  
+        })
+    }
+}
+export function deleteCheckListData(id){
+    return function(dispatch){
+        axios.delete(`https://api.trello.com/1/checklists/${id}?key=${key}&token=${token}`)
+        .then((res)=>{
+            dispatch(deletingChechListData(id))
+            // console.log(res.data);
+        })
+    }
+}
+export function readingCheckItemsData(id){
+    return function(dispatch){
+        axios.get(`https://api.trello.com/1/checklists/${id}/checkItems?key=${key}&token=${token}`)
+        .then((res)=>{
+            dispatch(readingCheckItemData(res.data))
+        })
+    }
+}
+export function createChechItemData(id,name){
+    return function(dispatch){
+        axios .post(`https://api.trello.com/1/checklists/${id}/checkItems?name=${name}&key=${key}&token=${token}`)
+        .then(res =>{ 
+            dispatch(creatingCheckItemData(res.data))
+            // console.log( res.data,'post');  
+        })
+    }
+}
+export function deleteCheckItemsData(checkListId,checkItemId){
+    return function(dispatch){
+        axios.delete(`https://api.trello.com/1/checklists/${checkListId}/checkItems/${checkItemId}?key=${key}&token=${token}`)
+        .then((res)=>{
+            dispatch(deleteCheckItemData(checkListId))
+            // console.log(res.data);
+        })
+    }
+}
+
 function reducer(state,action){
     switch(action.type){
         case 'READING_BOARDS_DATA':
@@ -204,12 +290,62 @@ function reducer(state,action){
                         ...filteredcardData
                     ]
                 }
+        case 'READING_CHECKLIST_DATA':
+            return{
+                ...state,
+                checkListData:action.payload
+            }
+        case 'CREATING_CHECKLIST_DATA':
+            return{
+                ...state,
+                checkListData:[
+                    ...state.checkListData,
+                    action.payload
+                ]
+            }
+        case 'DELETING_CHECKLIST_DATA':
+            let filteredchecklistData = state.checkListData.filter((data)=>{
+                return data.id !== action.payload
+            })
+            return{
+                ...state,
+                checkListData:[
+                    ...filteredchecklistData
+                ]
+            }
+        case 'READING_CHECKITEMS_DATA':
+            return{
+                ...state,
+                checkItemsData:[
+                    ...state.checkItemsData,
+                    ...action.payload]
+            }
+        case 'CREATING_CHECKITEMS_DATA':
+            return{
+                ...state,
+                checkItemsData:[
+                    ...state.checkItemsData,
+                    action.payload
+                ]
+            }
+        case 'DELETE_CHECKITEMS_DATA':
+            const newChekItems = state.checkItemsData.filter((data) => {
+                return data.id !== action.payload;
+            })
+            return{
+                ...state,
+                checkItemsData:[
+                    ...newChekItems
+                ]
+            }
         default:
             return state 
     }
 }
 
-const store = createStore(reducer,initailasatate,applyMiddleware(thunk))
+const store = createStore(reducer,
+    // window.REDUX_DEVTOOLS_EXTENSION && window.REDUX_DEVTOOLS_EXTENSION(),
+    initailasatate,applyMiddleware(thunk))
 store.subscribe(()=>{
     console.log(store.getState());
 })
