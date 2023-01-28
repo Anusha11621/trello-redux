@@ -9,7 +9,8 @@ const initailasatate = {
     listsData : [],
     cardsData : [],
     checkListData:[],
-    checkItemsData:[]
+    checkItemsData:[],
+    archivedata:[]
 }
 
 function readingBoardsData(data){
